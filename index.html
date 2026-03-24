@@ -26,7 +26,7 @@
             padding-bottom: 10px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
-        .header h1 { font-size: 16px; font-weight: 700; color: #fcfcfc; }
+        .header h1 { font-size: 22px; font-weight: 700; color: #1f1346; }
         .header span { font-size: 18px; color: #000000; }
         .grid-container {
             display: none; 
@@ -75,9 +75,9 @@
             margin-right: 10px;
             align-items: center;
         }
-        .badge-STOCK, .badge-OOS { background: #ff4c4c; color: #2f1c6a; }
-        .badge-ACOS, .badge-ROAS { background: #ff9800; color: #2f1c6a; }
-        .badge-PAUSAR { background: #e91e63; color: #2f1c6a; }
+        .badge-STOCK, .badge-OOS { background: #ff4c4c; color: #ffffff; }
+        .badge-ACOS, .badge-ROAS { background: #ff9800; color: #ffffff; }
+        .badge-PAUSAR { background: #e91e63; color: #ffffff; }
         
         #pantalla-carga {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
@@ -122,11 +122,11 @@
 
     <div class="grid-container">
         <div class="card">
-            <div class="card-title">Facturación</div>
+            <div class="card-title">GMV</div>
             <div class="metric-wrapper"><div class="card-value" id="val-facturacion">$-</div><div id="wow-facturacion"></div></div>
         </div>
         <div class="card">
-            <div class="card-title">Inversión (Ads)</div>
+            <div class="card-title">Inversión Ads</div>
             <div class="metric-wrapper"><div class="card-value" id="val-inversion">$-</div><div id="wow-inversion"></div></div>
         </div>
         <div class="card">
@@ -138,17 +138,18 @@
             <div class="metric-wrapper"><div class="card-value" id="val-tacos">-%</div><div id="wow-tacos"></div></div>
         </div>
         <div class="card">
-            <div class="card-title">Conversión (CVR)</div>
+            <div class="card-title">CVR
+            </div>
             <div class="metric-wrapper"><div class="card-value" id="val-cvr">-%</div><div id="wow-cvr"></div></div>
         </div>
         <div class="card">
-            <div class="card-title">Órdenes</div>
+            <div class="card-title">Ventas</div>
             <div class="metric-wrapper"><div class="card-value" id="val-ordenes">-</div><div id="wow-ordenes"></div></div>
         </div>
         
         <div class="card alerta-card" id="tarjeta-alerta">
             <span class="badge" id="alerta-tipo">TIPO</span>
-            <span id="alerta-valor" style="font-size: 12px; font-weight: 600; color: #fff;"></span>
+            <span id="alerta-valor" style="font-size: 24px; font-weight: 600; color: #1f1346;"></span>
         </div>
     </div>
 
