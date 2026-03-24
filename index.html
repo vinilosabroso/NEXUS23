@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard EVO - Telemetría</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0f0f13 0%, #1a1a24 100%);
+            color: #ffffff;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            padding: 15px;
+        }
+        .header {
+            display: none; 
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .header h1 { font-size: 16px; font-weight: 700; color: #8c1dc4; }
+        .header span { font-size: 12px; color: #888; }
+        .grid-container {
+            display: none; 
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            flex-grow: 1;
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+        }
+        .card-title { font-size: 11px; text-transform: uppercase; color: #a0a0a0; letter-spacing: 0.5px; margin-bottom: 8px; }
+        .metric-wrapper { display: flex; align-items: center; gap: 8px; }
+        .card-value { font-size: 22px; font-weight: 700; }
+        .wow-trend { font-size: 11px; font-weight: 700; padding: 2px 6px; border-radius: 4px; }
+        .trend-up { background: rgba(0, 255, 0, 0.1); color: #00ff00; }
+        .trend-down { background: rgba(255, 0, 0, 0.1); color: #ff4c4c; }
+        .trend-neutral { display: none; }
+        
+        .alerta-card {
+            grid-column: span 2;
+            background: rgba(255, 0, 0, 0.1);
+            border-color: rgba(255, 0, 0, 0.3);
+            display: none;
+            flex-direction: row;
+            justify-content: flex-start;
+            padding: 10px 15px;
+        }
+        .alerta-activa { display: flex; }
+        .badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 700;
+            margin-right: 10px;
+        }
+        .badge-STOCK, .badge-OOS { background: #ff4c4c; color: #fff; }
+        .badge-ACOS, .badge-ROAS { background: #ff9800; color: #fff; }
+        .badge-PAUSAR { background: #e91e63; color: #fff; }
+        
+        #pantalla-carga {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: #0f0f13; display: none; align-items: center; justify-content: center; flex-direction: column;
+            z-index: 10; font-size: 14px; color: #8c1dc4;
+        }
+
+        #pantalla-ingreso {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: #0f0f13; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            z-index: 20;
+        }
+        .input-box {
+            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff; padding: 12px 20px; border-radius: 8px; font-family: 'Poppins', sans-serif;
+            font-size: 14px; text-align: center; margin-bottom: 15px; outline: none; width: 250px;
+        }
+        .btn-ingresar {
+            background: #8c1dc4; color: #fff; border: none; padding: 12px 25px;
+            border-radius: 8px; font-weight: 700; cursor: pointer; font-family: 'Poppins', sans-serif;
+            font-size: 14px; width: 250px; transition: 0.2s; text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .btn-ingresar:hover { background: #7114a0; }
+    </style>
+</head>
+<body>
+
+    <div id="pantalla-ingreso">
+        <h2 style="font-size: 16px; margin-bottom: 20px; color: #8c1dc4;">ACCESO TELEMETRÍA</h2>
+        <form method="GET" action="" style="display: flex; flex-direction: column; align-items: center;">
+            <input type="text" name="cliente" class="input-box" placeholder="ID del Cliente" required autocomplete="off">
+            <button type="submit" class="btn-ingresar">Inicializar</button>
+        </form>
+    </div>
+
+    <div id="pantalla-carga"><span id="texto-carga">Sincronizando...</span></div>
+
+    <div class="header">
+        <h1 id="nombre-cliente">Dashboard EVO</h1>
+        <span id="fecha-actualizacion">--/--/----</span>
+    </div>
+
+    <div class="grid-container">
+        <div class="card">
+            <div class="card-title">Facturación</div>
+            <div class="metric-wrapper"><div class="card-value" id="val-facturacion">$-</div><div id="wow-facturacion"></div></div>
+        </div>
+        <div class="card">
+            <div class="card-title">Inversión (Ads)</div>
+            <div class="metric-wrapper"><div class="card-value" id="val-inversion">$-</div><div id="wow-inversion"></div></div>
+        </div>
+        <div class="card">
+            <div class="card-title">AOV</div>
+            <div class="metric-wrapper"><div class="card-value" id="val-aov">$-</div><div id="wow-aov"></div></div>
+        </div>
+        <div class="card">
+            <div class="card-title">TACoS</div>
+            <div class="metric-wrapper"><div class="card-value" id="val-tacos">-%</div><div id="wow-tacos"></div></div>
+        </div>
+        <div class="card">
+            <div class="card-title">Conversión (CVR)</div>
+            <div class="metric-wrapper"><div class="card-value" id="val-cvr">-%</div><div id="wow-cvr"></div></div>
+        </div>
+        <div class="card">
+            <div class="card-title">Órdenes</div>
+            <div class="metric-wrapper"><div class="card-value" id="val-ordenes">-</div><div id="wow-ordenes"></div></div>
+        </div>
+        
+        <div class="card alerta-card" id="tarjeta-alerta">
+            <span class="badge" id="alerta-tipo">TIPO</span>
+            <span id="alerta-valor" style="font-size: 12px; font-weight: 600; color: #fff;"></span>
+        </div>
+    </div>
+
+    <script>
+        const URL_WEB_APP = "https://script.google.com/macros/s/AKfycbx2S6DigtLhTTzNwVFwMuQm0CoOtRckrJTdJK05HThQDksPB54Jy9aEbUvASbA9H6Pw/exec"; 
+
+        const parametrosRuta = new URLSearchParams(window.location.search);
+        const idCliente = parametrosRuta.get('cliente');
+        const formatoMoneda = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 });
+
+        function formatearWow(valor) {
+            if (valor === 0) return `<span class="wow-trend trend-neutral"></span>`;
+            const signo = valor > 0 ? '+' : '';
+            const clase = valor > 0 ? 'trend-up' : 'trend-down';
+            return `<span class="wow-trend ${clase}">${signo}${valor.toFixed(1)}%</span>`;
+        }
+
+        if (idCliente) {
+            document.getElementById('pantalla-ingreso').style.display = 'none';
+            document.getElementById('pantalla-carga').style.display = 'flex';
+
+            fetch(`${URL_WEB_APP}?cliente=${idCliente}`)
+                .then(respuesta => respuesta.json())
+                .then(datos => {
+                    if (datos.error) {
+                        document.getElementById('texto-carga').innerHTML = datos.error;
+                        document.getElementById('pantalla-carga').innerHTML += `<button onclick="window.location.href=window.location.pathname" class="btn-ingresar" style="margin-top: 15px; width: auto;">Volver</button>`;
+                        return;
+                    }
+
+                    document.querySelector('.header').style.display = 'flex';
+                    document.querySelector('.grid-container').style.display = 'grid';
+
+                    document.getElementById('nombre-cliente').innerText = datos.cliente;
+                    const fecha = new Date(datos.timestamp);
+                    document.getElementById('fecha-actualizacion').innerText = fecha.toLocaleDateString('es-AR');
+
+                    document.getElementById('val-facturacion').innerText = formatoMoneda.format(datos.metricas.facturacion.valor);
+                    document.getElementById('wow-facturacion').innerHTML = formatearWow(datos.metricas.facturacion.wow);
+
+                    document.getElementById('val-inversion').innerText = formatoMoneda.format(datos.metricas.inversion.valor);
+                    document.getElementById('wow-inversion').innerHTML = formatearWow(datos.metricas.inversion.wow);
+
+                    document.getElementById('val-aov').innerText = formatoMoneda.format(datos.metricas.aov.valor);
+                    document.getElementById('wow-aov').innerHTML = formatearWow(datos.metricas.aov.wow);
+
+                    document.getElementById('val-tacos').innerText = datos.metricas.tacos.valor.toFixed(2) + '%';
+                    document.getElementById('wow-tacos').innerHTML = formatearWow(datos.metricas.tacos.wow);
+
+                    document.getElementById('val-cvr').innerText = datos.metricas.cvr.valor.toFixed(2) + '%';
+                    document.getElementById('wow-cvr').innerHTML = formatearWow(datos.metricas.cvr.wow);
+
+                    document.getElementById('val-ordenes').innerText = datos.metricas.ordenes.valor;
+                    document.getElementById('wow-ordenes').innerHTML = formatearWow(datos.metricas.ordenes.wow);
+
+                    if (datos.alerta.activa) {
+                        const tarjetaAlerta = document.getElementById('tarjeta-alerta');
+                        const tipoAlerta = document.getElementById('alerta-tipo');
+                        
+                        tarjetaAlerta.classList.add('alerta-activa');
+                        tipoAlerta.innerText = datos.alerta.tipo;
+                        tipoAlerta.className = 'badge badge-' + datos.alerta.tipo;
+                        document.getElementById('alerta-valor').innerText = datos.alerta.valor;
+                    }
+
+                    document.getElementById('pantalla-carga').style.display = 'none';
+                })
+                .catch(error => {
+                    document.getElementById('texto-carga').innerHTML = "Fallo crítico de conexión.";
+                    document.getElementById('pantalla-carga').innerHTML += `<button onclick="window.location.href=window.location.pathname" class="btn-ingresar" style="margin-top: 15px; width: auto;">Volver</button>`;
+                });
+        }
+    </script>
+</body>
+</html>
