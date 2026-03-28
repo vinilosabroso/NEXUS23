@@ -49,11 +49,23 @@
             border-right: 1px solid #eee;
         }
 
-        .controls-panel h1 {
-            font-weight: 600;
-            margin-bottom: 20px;
-            font-size: 2.2em;
-        }
+        #wheel-title-input {
+    font-weight: 600;
+    margin-bottom: 20px;
+    font-size: 2.2em;
+    font-family: 'Poppins', sans-serif;
+    border: none;
+    border-bottom: 2px dashed #ccc;
+    background: transparent;
+    width: 100%;
+    color: var(--text-color);
+    transition: border-color 0.3s;
+}
+
+#wheel-title-input:focus {
+    outline: none;
+    border-bottom: 2px solid var(--accent-color);
+}
 
         .inputs-container {
             margin-bottom: 30px;
@@ -193,10 +205,9 @@
                 flex-direction: column-reverse;
             }
 
-            .controls-panel, .wheel-panel {
-                padding: 30px;
-                border: none;
-            }
+            #wheel-title-input {
+    font-size: 1.8em;
+}
 
             .controls-panel h1 {
                 font-size: 1.8em;
@@ -208,7 +219,7 @@
 
     <div class="main-container">
         <div class="controls-panel">
-            <h1 id="wheel-title">Qué película ver?</h1>
+            <input type="text" id="wheel-title-input" value="¿Qué película ver?">
             
             <div class="inputs-container" id="inputs-container">
                 </div>
